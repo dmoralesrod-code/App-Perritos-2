@@ -45,7 +45,22 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         })
         .catch(error => console.error("Error en fetch:", error));
+// Capturar los valores de los nuevos campos del responsable
+const nombreResponsable = document.getElementById('nombreResponsable').value || 'No especificado';
+const descripcionResponsable = document.getElementById('descripcionResponsable').value || 'Sin descripción';
+const relacionPerrito = document.getElementById('relacionPerrito').value;
 
+// Objeto con la nueva estructura de la denuncia
+const nuevaDenuncia = {
+    // ... tus otros campos existentes (fecha, ubicación, etc.) ...
+    
+    // Información del Responsable
+    responsable: {
+        nombre: nombreResponsable,
+        descripcion: descripcionResponsable,
+        relacion: relacionPerrito
+    }
+};
     // 2. CAPTURAR UBICACIÓN GPS
     const botones = Array.from(document.querySelectorAll("button"));
     const btnUbicacion = botones.find(b => b.textContent.includes("GPS")) || botones[0];
