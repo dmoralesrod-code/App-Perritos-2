@@ -1,0 +1,9 @@
+{
+  "short_name": "AppPerritos",
+  "name": "App Perritos - Reporte de Maltrato",
+  "icons": [],
+  "start_url": ".",
+  "background_color": "#f8f9fa",
+  "theme_color": "#d9534f",
+  "display": "standalone"
+}
