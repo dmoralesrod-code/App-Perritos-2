@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Perritos - Reporte de Maltrato</title>
+  
+  <!-- Enlace al manifest PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#d9534f">
+
+  <style>
+    :root {
+      --primary: #d9534f;
+      --bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --text: #333333;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+
+    header { text-align: center; margin-top: 10px; }
+    header h1 { font-size: 1.5rem; color: var(--primary); }
+    header p { font-size: 0.9rem; color: #666; margin-top: 4px; }
+
+    .card { background: var(--card-bg); border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .card h2 { font-size: 1.1rem; margin-bottom: 12px; border-bottom: 2px solid var(--bg); padding-bottom: 6px; }
+
+    form { display: flex; flex-direction: column; gap: 12px; }
+    label { font-weight: bold; font-size: 0.85rem; }
+    input, select, textarea, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.95rem; }
+    
+    .geo-container { display: flex; flex-direction: column; gap: 6px; }
+    .btn-geo { background-color: #6c757d; color: white; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+    .btn-submit { background-color: var(--primary); color: white; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 8px; }
+    button:active { opacity: 0.85; }
+
+    .status-msg { font-size: 0.8rem; color: #d9534f; font-weight: 500; }
+    .canal-item { margin-bottom: 8px; font-size: 0.9rem; line-height: 1.4; }
+
+    @media (min-width: 768px) {
+      body { max-width: 500px; margin: 0 auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🐶 Denuncia Animal</h1>
+    <p>Reporte ciudadano de maltrato</p>
+  </header>
+
+  <!-- Canales de emergencia dinámicos -->
+  <section class="card">
+    <h2>Canales Directos de Ayuda</h2>
+    <div id="lista-canales">Cargando líneas de atención...</div>
+  </section>
+
+  <!-- Formulario de reporte -->
+  <section class="card">
+    <h2>Registrar Caso</h2>
+    <form id="form-maltrato">
+      
+      <div>
+        <label for="select-tipo">Tipo de Maltrato</label>
+        <select id="select-tipo" required>
+          <option value="">Selecciona una categoría...</option>
+        </select>
+      </div>
+
+      <div class="geo-container">
+        <label for="ubicacion">Ubicación / Dirección</label>
+        <input type="text" id="ubicacion" placeholder="Dirección o coordenadas" required>
+        <button type="button" id="btn-geolocalizar" class="btn-geo">📍 Capturar mi ubicación GPS</button>
+        <small id="geo-status" class="status-msg"></small>
+      </div>
+
+      <div>
+        <label for="descripcion">Detalles de la Situación</label>
+        <textarea id="descripcion" rows="3" placeholder="Describe brevemente lo que ocurre..." required></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit">Enviar Reporte</button>
+    </form>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
