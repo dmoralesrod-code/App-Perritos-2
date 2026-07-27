@@ -68,7 +68,25 @@
           <option value="">Selecciona una categoría...</option>
         </select>
       </div>
+<!-- Campos para Identificar al Responsable -->
+<fieldset style="border: 1px solid #ccc; padding: 15px; margin-top: 15px; border-radius: 8px;">
+  <legend style="font-weight: bold; color: #d9534f;">Datos del Presunto Responsable</legend>
+  
+  <label for="nombreResponsable">Nombre o apodo del responsable (si se conoce):</label>
+  <input type="text" id="nombreResponsable" name="nombreResponsable" placeholder="Ej: Vecino del apto 202 / Juan Perez">
 
+  <label for="descripcionResponsable" style="margin-top: 10px; display: block;">Descripción física o rasgos particulares:</label>
+
+  <textarea id="descripcionResponsable" name="descripcionResponsable" rows="2" placeholder="Ej: Hombre alto, tez trigueña, viste chaqueta negra..."></textarea>
+  <label for="relacionPerrito" style="margin-top: 10px; display: block;">Relación con el animal:</label>
+
+  <select id="relacionPerrito" name="relacionPerrito">
+    <option value="Propietario/Tutor">Propietario / Tutor</option>
+    <option value="Vecino">Vecino</option>
+    <option value="Desconocido">Desconocido / Transeúnte</option>
+    <option value="Otro">Otro</option>
+  </select>
+</fieldset>
       <div class="geo-container">
         <label for="ubicacion">Ubicación / Dirección</label>
         <input type="text" id="ubicacion" placeholder="Dirección o coordenadas" required>
