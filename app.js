@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+
     // 1. CARGAR DATOS DESDE EL JSON (fetch)
     fetch("data.json")
         .then(response => {
@@ -45,22 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         })
         .catch(error => console.error("Error en fetch:", error));
-// Capturar los valores de los nuevos campos del responsable
-const nombreResponsable = document.getElementById('nombreResponsable').value || 'No especificado';
-const descripcionResponsable = document.getElementById('descripcionResponsable').value || 'Sin descripción';
-const relacionPerrito = document.getElementById('relacionPerrito').value;
 
-// Objeto con la nueva estructura de la denuncia
-const nuevaDenuncia = {
-    // ... tus otros campos existentes (fecha, ubicación, etc.) ...
-    
-    // Información del Responsable
-    responsable: {
-        nombre: nombreResponsable,
-        descripcion: descripcionResponsable,
-        relacion: relacionPerrito
-    }
-};
+
     // 2. CAPTURAR UBICACIÓN GPS
     const botones = Array.from(document.querySelectorAll("button"));
     const btnUbicacion = botones.find(b => b.textContent.includes("GPS")) || botones[0];
@@ -87,4 +74,41 @@ const nuevaDenuncia = {
             }
         });
     }
+
+
+    // 3. CAPTURAR Y GUARDAR EL FORMULARIO (INCLUYENDO RESPONSABLE)
+    const formulario = document.getElementById("form-maltrato");
+    if (formulario) {
+        formulario.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            // Leer datos del responsable al presionar "Enviar Reporte"
+            const nombreResponsable = document.getElementById('nombreResponsable').value || 'No especificado';
+            const descripcionResponsable = document.getElementById('descripcionResponsable').value || 'Sin descripción';
+            const relacionPerrito = document.getElementById('relacionPerrito').value;
+
+            // Crear objeto con toda la información
+            const nuevaDenuncia = {
+                id: Date.now(),
+                tipo: document.getElementById('select-tipo').value,
+                ubicacion: document.getElementById('ubicacion').value,
+                descripcion: document.getElementById('descripcion').value,
+                responsable: {
+                    nombre: nombreResponsable,
+                    descripcion: descripcionResponsable,
+                    relacion: relacionPerrito
+                },
+                fecha: new Date().toLocaleString()
+            };
+
+            // Guardar localmente
+            const denunciasGuardadas = JSON.parse(localStorage.getItem('denuncias_perritos') || '[]');
+            denunciasGuardadas.push(nuevaDenuncia);
+            localStorage.setItem('denuncias_perritos', JSON.stringify(denunciasGuardadas));
+
+            alert("¡Reporte enviado exitosamente!");
+            formulario.reset();
+        });
+    }
+
 });
