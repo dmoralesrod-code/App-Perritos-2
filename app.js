@@ -1,5 +1,36 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    // Función para renderizar los reportes guardados en pantalla
+    function mostrarReportes() {
+        const contenedor = document.getElementById("lista-reportes");
+        if (!contenedor) return;
+
+        const denuncias = JSON.parse(localStorage.getItem("denuncias_perritos") || "[]");
+
+        if (denuncias.length === 0) {
+            contenedor.innerHTML = '<p style="font-size: 0.85rem; color: #777;">No hay reportes registrados aún.</p>';
+            return;
+        }
+
+        contenedor.innerHTML = denuncias.map(d => `
+            <div style="border-bottom: 1px solid #eee; padding: 10px 0; font-size: 0.88rem;">
+                <p style="color: #d9534f; font-weight: bold; margin-bottom: 4px;">🚨 ${d.tipo || 'Maltrato'}</p>
+                <p><strong>Ubicación:</strong> ${d.ubicacion}</p>
+                <p><strong>Detalles:</strong> ${d.descripcion}</p>
+                <div style="background-color: #f1f1f1; padding: 8px; border-radius: 6px; margin-top: 6px;">
+                    <p style="font-weight: bold; margin-bottom: 2px;">👤 Presunto Responsable:</p>
+                    <p>• Nombre/Apodo: ${d.responsable?.nombre || 'No especificado'}</p>
+                    <p>• Relación: ${d.responsable?.relacion || 'No especificada'}</p>
+                    <p>• Descripción: ${d.responsable?.descripcion || 'Sin descripción'}</p>
+                </div>
+                <small style="color: #888; display: block; margin-top: 4px;">Fecha: ${d.fecha}</small>
+            </div>
+        `).join("");
+    }
+
+    // Cargar reportes guardados al iniciar
+    mostrarReportes();
+
     // 1. CARGAR DATOS DESDE EL JSON (fetch)
     fetch("data.json")
         .then(response => {
@@ -76,18 +107,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // 3. CAPTURAR Y GUARDAR EL FORMULARIO (INCLUYENDO RESPONSABLE)
+    // 3. CAPTURAR Y GUARDAR EL FORMULARIO
     const formulario = document.getElementById("form-maltrato");
     if (formulario) {
         formulario.addEventListener("submit", (e) => {
             e.preventDefault();
 
-            // Leer datos del responsable al presionar "Enviar Reporte"
             const nombreResponsable = document.getElementById('nombreResponsable').value || 'No especificado';
             const descripcionResponsable = document.getElementById('descripcionResponsable').value || 'Sin descripción';
             const relacionPerrito = document.getElementById('relacionPerrito').value;
 
-            // Crear objeto con toda la información
             const nuevaDenuncia = {
                 id: Date.now(),
                 tipo: document.getElementById('select-tipo').value,
@@ -108,6 +137,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             alert("¡Reporte enviado exitosamente!");
             formulario.reset();
+            
+            // Refrescar la lista en pantalla
+            mostrarReportes();
         });
     }
 
