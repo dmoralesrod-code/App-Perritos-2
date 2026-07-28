@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    // Función para renderizar los reportes guardados en pantalla
+    // Función para renderizar reportes en el contenedor inferior
     function mostrarReportes() {
         const contenedor = document.getElementById("lista-reportes");
         if (!contenedor) return;
@@ -17,54 +17,48 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p style="color: #d9534f; font-weight: bold; margin-bottom: 4px;">🚨 ${d.tipo || 'Maltrato'}</p>
                 <p><strong>Ubicación:</strong> ${d.ubicacion}</p>
                 <p><strong>Detalles:</strong> ${d.descripcion}</p>
-                <div style="background-color: #f1f1f1; padding: 8px; border-radius: 6px; margin-top: 6px;">
-                    <p style="font-weight: bold; margin-bottom: 2px;">👤 Presunto Responsable:</p>
-                    <p>• Nombre/Apodo: ${d.responsable?.nombre || 'No especificado'}</p>
-                    <p>• Relación: ${d.responsable?.relacion || 'No especificada'}</p>
-                    <p>• Descripción: ${d.responsable?.descripcion || 'Sin descripción'}</p>
+                <div style="background-color: #f8f9fa; padding: 8px; border-radius: 6px; margin-top: 6px; border: 1px solid #e9ecef;">
+                    <p style="font-weight: bold; color: #333; margin-bottom: 2px;">👤 Presunto Responsable:</p>
+                    <p>• <strong>Nombre/Apodo:</strong> ${d.responsable?.nombre || 'No especificado'}</p>
+                    <p>• <strong>Relación:</strong> ${d.responsable?.relacion || 'No especificada'}</p>
+                    <p>• <strong>Descripción:</strong> ${d.responsable?.descripcion || 'Sin descripción'}</p>
                 </div>
-                <small style="color: #888; display: block; margin-top: 4px;">Fecha: ${d.fecha}</small>
+                <small style="color: #888; display: block; margin-top: 4px;">📅 ${d.fecha}</small>
             </div>
         `).join("");
     }
 
-    // Cargar reportes guardados al iniciar
+    // Cargar reportes iniciales
     mostrarReportes();
 
-    // 1. CARGAR DATOS DESDE EL JSON (fetch)
+    // 1. CARGAR DATOS DESDE EL JSON (Canales y Categorías)
     fetch("data.json")
         .then(response => {
             if (!response.ok) throw new Error("Error al cargar JSON");
             return response.json();
         })
         .then(data => {
-            // Cargar líneas de atención
-            if (data.lineasAtencion) {
-                const elementos = Array.from(document.querySelectorAll("*"));
-                const elementoCargando = elementos.find(el => el.children.length === 0 && el.textContent.includes("Cargando líneas"));
-                
-                if (elementoCargando) {
-                    const nombresPorDefecto = ["Emergencias", "Protección Animal"];
-                    const lineasHTML = data.lineasAtencion.map((l, index) => {
-                        let titulo = nombresPorDefecto[index] || `Línea ${index + 1}`;
-                        let numero = "";
+            // Renderizar Canales de atención
+            const contenedorCanales = document.getElementById("lista-canales");
+            if (contenedorCanales && data.lineasAtencion) {
+                const nombresPorDefecto = ["Emergencias", "Protección Animal"];
+                contenedorCanales.innerHTML = data.lineasAtencion.map((l, index) => {
+                    let titulo = nombresPorDefecto[index] || `Línea ${index + 1}`;
+                    let numero = "";
 
-                        if (typeof l === "object" && l !== null) {
-                            titulo = l.nombre || l.titulo || l.tipo || nombresPorDefecto[index] || "Línea";
-                            numero = l.numero || l.telefono || Object.values(l)[1] || Object.values(l)[0];
-                        } else {
-                            numero = l;
-                        }
+                    if (typeof l === "object" && l !== null) {
+                        titulo = l.nombre || l.titulo || l.tipo || nombresPorDefecto[index] || "Línea";
+                        numero = l.numero || l.telefono || Object.values(l)[1] || Object.values(l)[0];
+                    } else {
+                        numero = l;
+                    }
 
-                        return `<p style="margin: 4px 0;"><strong>${titulo}:</strong> ${numero}</p>`;
-                    }).join("");
-
-                    elementoCargando.parentElement.innerHTML = lineasHTML;
-                }
+                    return `<p style="margin: 4px 0;"><strong>${titulo}:</strong> ${numero}</p>`;
+                }).join("");
             }
 
-            // Cargar categorías en el select
-            const selectCategoria = document.querySelector("select");
+            // Renderizar Categorías en el Select
+            const selectCategoria = document.getElementById("select-tipo");
             if (selectCategoria && data.categorias) {
                 selectCategoria.innerHTML = '<option value="">Selecciona una categoría...</option>';
                 data.categorias.forEach(cat => {
@@ -80,12 +74,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // 2. CAPTURAR UBICACIÓN GPS
-    const botones = Array.from(document.querySelectorAll("button"));
-    const btnUbicacion = botones.find(b => b.textContent.includes("GPS")) || botones[0];
-    const inputUbicacion = document.querySelector('input[placeholder*="Dirección"]') || document.querySelector("input");
+    const btnGeo = document.getElementById("btn-geolocalizar");
+    const inputUbicacion = document.getElementById("ubicacion");
 
-    if (btnUbicacion && inputUbicacion) {
-        btnUbicacion.addEventListener("click", (e) => {
+    if (btnGeo && inputUbicacion) {
+        btnGeo.addEventListener("click", (e) => {
             e.preventDefault();
             if (navigator.geolocation) {
                 inputUbicacion.value = "Obteniendo ubicación...";
@@ -113,32 +106,28 @@ document.addEventListener("DOMContentLoaded", () => {
         formulario.addEventListener("submit", (e) => {
             e.preventDefault();
 
-            const nombreResponsable = document.getElementById('nombreResponsable').value || 'No especificado';
-            const descripcionResponsable = document.getElementById('descripcionResponsable').value || 'Sin descripción';
-            const relacionPerrito = document.getElementById('relacionPerrito').value;
-
             const nuevaDenuncia = {
                 id: Date.now(),
                 tipo: document.getElementById('select-tipo').value,
                 ubicacion: document.getElementById('ubicacion').value,
                 descripcion: document.getElementById('descripcion').value,
                 responsable: {
-                    nombre: nombreResponsable,
-                    descripcion: descripcionResponsable,
-                    relacion: relacionPerrito
+                    nombre: document.getElementById('nombreResponsable').value || 'No especificado',
+                    descripcion: document.getElementById('descripcionResponsable').value || 'Sin descripción',
+                    relacion: document.getElementById('relacionPerrito').value
                 },
                 fecha: new Date().toLocaleString()
             };
 
-            // Guardar localmente
+            // Guardar en LocalStorage
             const denunciasGuardadas = JSON.parse(localStorage.getItem('denuncias_perritos') || '[]');
             denunciasGuardadas.push(nuevaDenuncia);
             localStorage.setItem('denuncias_perritos', JSON.stringify(denunciasGuardadas));
 
-            alert("¡Reporte enviado exitosamente!");
+            alert("¡Reporte guardado exitosamente!");
             formulario.reset();
             
-            // Refrescar la lista en pantalla
+            // Actualizar vista inmediatamente
             mostrarReportes();
         });
     }
